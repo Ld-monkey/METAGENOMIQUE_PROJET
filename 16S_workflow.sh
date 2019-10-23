@@ -99,9 +99,30 @@ else
 fi
 
 # Rassembler tous les fichiers en 1 seul ==> amplicon.fasta.
-
 cat $2fusion_reads/*.fasta > $2concatenation_amplicon/amplicon.fasta
 sed -i "s/ //g" $2concatenation_amplicon/amplicon.fasta
 echo "La concatenation est complete -> amplicon.fasta"
 
 # 4 étapes de clusterisation.
+
+# 4-1 : Déduplication en full length ou en prefix
+# Abondances de chaque séquence devront être reportées.
+# Verification de l'existence results/concatenation_amplicon.
+if [ -d $2/dereplication ]
+then
+    echo "dereplication exist."
+else
+    mkdir $2/dereplication
+    echo "dossier dereplication créé"
+fi
+./$alien_folder/vsearch --derep_fulllength $2concatenation_amplicon/amplicon.fasta --sizeout --minuniquesize 10 --output $2dereplication/derep_amplicon.fasta
+
+# 4-2 : Suppression des singletons < abondance 10.
+# Quel est l'impact de seuils supérieurs ?
+
+
+# 4-3 : Suppression des chimères : chimera detection
+# Approche denovo, confirmer avec blast ?
+
+# 4-3 : Clustering = 97 identité, OTU=centroids
+# Chaque centroid = OTU_numéro_de_séquence.

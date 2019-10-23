@@ -108,6 +108,7 @@ echo "La concatenation est complete -> amplicon.fasta"
 # 4-1 : Déduplication en full length ou en prefix
 # Abondances de chaque séquence devront être reportées.
 # Verification de l'existence results/concatenation_amplicon.
+# + 4-2 : Suppression des singletons < abondance 10 avec --miniquesize.
 if [ -d $2/dereplication ]
 then
     echo "dereplication exist."
@@ -117,12 +118,16 @@ else
 fi
 ./$alien_folder/vsearch --derep_fulllength $2concatenation_amplicon/amplicon.fasta --sizeout --minuniquesize 10 --output $2dereplication/derep_amplicon.fasta
 
-# 4-2 : Suppression des singletons < abondance 10.
-# Quel est l'impact de seuils supérieurs ?
-
-
 # 4-3 : Suppression des chimères : chimera detection
 # Approche denovo, confirmer avec blast ?
+if [ -d $2/chimeras ]
+then
+    echo "chimeras exist."
+else
+    mkdir $2/chimeras
+    echo "dossier chimeras créé"
+fi
+./$alien_folder/vsearch --uchime_denovo $2dereplication/derep_amplicon.fasta --nonchimeras $2chimeras/chimeras.fasta
 
 # 4-3 : Clustering = 97 identité, OTU=centroids
 # Chaque centroid = OTU_numéro_de_séquence.

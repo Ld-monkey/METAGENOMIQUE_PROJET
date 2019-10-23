@@ -131,3 +131,16 @@ fi
 
 # 4-3 : Clustering = 97 identité, OTU=centroids
 # Chaque centroid = OTU_numéro_de_séquence.
+if [ -d $2/clustering ]
+then
+    echo "clustering exist."
+else
+    mkdir $2/clustering
+    echo "dossier clustering créé"
+fi
+./$alien_folder/vsearch --cluster_size $2chimeras/chimeras.fasta  --id 0.97 --relabel OTU_ --centroids $2clustering/clustering.fasta
+
+# Maintenant que nous avons les OTUs:
+# 5-1 : Déterminer leurs abondances et retourner un table d'abondance.
+
+# 5-2 : Annoter 

@@ -88,3 +88,20 @@ else
         ./$alien_folder/vsearch --fastq_mergepairs $2alientrimmer/$i_R1 --reverse $2alientrimmer/$j_R2  --fastaout $2fusion_reads/$output.fasta --label_suffix ";sample=$output"
     done
 fi
+
+# Verification de l'existence results/concatenation_amplicon.
+if [ -d $2/concatenation_amplicon ]
+then
+    echo "concatenation_amplicon exist."
+else
+    mkdir $2/concatenation_amplicon
+    echo "dossier concatenation_amplicon créé"
+fi
+
+# Rassembler tous les fichiers en 1 seul ==> amplicon.fasta.
+
+cat $2fusion_reads/*.fasta > $2concatenation_amplicon/amplicon.fasta
+sed -i "s/ //g" $2concatenation_amplicon/amplicon.fasta
+echo "La concatenation est complete -> amplicon.fasta"
+
+# 4 étapes de clusterisation.

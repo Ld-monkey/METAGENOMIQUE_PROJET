@@ -53,4 +53,38 @@ else
     echo "Fin du filtrage de(s) read(s)"
 fi
 
+# Verification de l'existence results/fusion_reads.
+if [ -d $2/fusion_reads ]
+then
+    echo "fusion_reads exist."
+else
+    mkdir $2/fusion_reads
+    echo "dossier fusion_reads créé"
+fi
 
+# Pour trouver de l'aide de vsearch.
+# ./$alien_folder/vsearch --help
+
+# 3 - fusionner les reads à l'aide de Vsearch (paired-end reads merging)
+# Et sort un fichier format fasta. + ajouter suffix a chaque read
+# par ex : sample=1ng-25cycle-1
+
+# Verifie si le dossier est vide.
+if [ "$(ls -A results/fusion_reads/)" ]
+then
+    echo "Tous les fastq ont été fusionnés et ont généré des fastas."
+    echo "Fin de la fusion de(s) fasta."
+else
+    all_R1=`ls $2alientrimmer/*_R1.fastq`
+    for i in $all_R1
+    do
+        i_R1=$(basename $i)
+        j=$(echo $i | sed "s:R1:R2:g")
+        j_R2=$(basename $j)
+        pre_outj=$(basename $j | cut -d. -f1)
+        output=$(echo $pre_outj | sed "s/_R2//g")
+
+        # paired-end reads mergin
+        ./$alien_folder/vsearch --fastq_mergepairs $2alientrimmer/$i_R1 --reverse $2alientrimmer/$j_R2  --fastaout $2fusion_reads/$output.fasta --label_suffix ";sample=$output"
+    done
+fi

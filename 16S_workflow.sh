@@ -142,5 +142,22 @@ fi
 
 # Maintenant que nous avons les OTUs:
 # 5-1 : Déterminer leurs abondances et retourner un table d'abondance.
+if [ -d $2/table_abondance ]
+then
+    echo "table_abondance exist."
+else
+    mkdir $2/table_abondance
+    echo "dossier table_abondance créé"
+fi
+./$alien_folder/vsearch --usearch_global $2chimeras/chimeras.fasta --db $2clustering/clustering.fasta --id 0.97 --otutabout $2table_abondance/table_abondance
 
-# 5-2 : Annoter 
+# 5-2 : Annoter
+if [ -d $2/annotation ]
+then
+    echo "annontation exist."
+else
+    mkdir $2/annotation
+    echo "dossier annotation créé"
+fi
+./$alien_folder/vsearch --usearch_global $2clustering/clustering.fasta --db data/databases/mock_16S_18S.fasta --id 0.9 --top_hits_only --userfields query+target --userout $2table_abondance/table_abondance
+sed '1iOTU\tAnnotation' -i $2table_abondance/table_abondance
